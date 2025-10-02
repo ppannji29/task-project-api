@@ -1,7 +1,7 @@
 # ========================
-# Build Stage
+# Single Stage Build & Run
 # ========================
-FROM golang:1.23 AS builder
+FROM golang:1.23
 
 WORKDIR /app
 
@@ -12,16 +12,9 @@ RUN go mod download
 COPY . ./
 RUN go build -o server .
 
-# ========================
-# Run Stage
-# ========================
-FROM debian:bullseye-slim
-
-WORKDIR /app
-COPY --from=builder /app/server .
-
 EXPOSE 3000
 CMD ["./server"]
+
 
 
 # # ========================
