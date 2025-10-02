@@ -1,0 +1,14 @@
+# Env files
+.env
+.env.local
+.env.production
+
+# OS & editor
+.DS_Store
+.idea/
+.vscode/
+
+# Build artifacts
+/server
+*.exe
+*.out
