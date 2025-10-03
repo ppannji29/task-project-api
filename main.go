@@ -31,7 +31,7 @@ func main() {
 	defer mongoStore.Client.Disconnect(context.Background())
 
 	// Setup routes
-	mux := routes.SetupRoutes(mongoStore)
+	route := routes.SetupRouter(mongoStore)
 
 	// Setup CORS
 	c := cors.New(cors.Options{
@@ -44,7 +44,7 @@ func main() {
 		AllowCredentials: true,
 	})
 
-	handler := c.Handler(mux)
+	handler := c.Handler(route)
 
 	// Setup HTTP server
 	srv := &http.Server{
