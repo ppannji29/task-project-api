@@ -8,11 +8,10 @@ import (
 
 func SetupRoutes(store *db.MongoCollections) *http.ServeMux {
 	mux := http.NewServeMux()
-
-	mux.HandleFunc("GET /", healthCheck)
-
-	mux.HandleFunc("POST /api/user/mydummy/create", handlers.CreateMyUserDummyTesting(store.UserCol, store.ProfileCol))
-
+	// api check health
+	mux.HandleFunc("/", healthCheck)
+	// create dummy user for testing
+	mux.HandleFunc("/api/user/mydummy/create", handlers.CreateMyUserDummyTesting(store.UserCol, store.ProfileCol))
 	// Auth
 	mux.HandleFunc("POST /api/auth/request-otp", handlers.RequestOtp(store.UserCol, store.OtpCol))
 	mux.HandleFunc("POST /api/auth/verify-otp", handlers.VerifyOtp(store.UserCol, store.OtpCol))
@@ -30,5 +29,5 @@ func SetupRoutes(store *db.MongoCollections) *http.ServeMux {
 
 func healthCheck(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	w.Write([]byte("MileApp mock API is running!"))
+	w.Write([]byte("Test mock API is running!"))
 }
