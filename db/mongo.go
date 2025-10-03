@@ -41,6 +41,8 @@ func InitMongo() (*MongoCollections, error) {
 
 	db := client.Database(dbName)
 
+	log.Println(db.Name())
+
 	return &MongoCollections{
 		Client:     client,
 		UserCol:    db.Collection("User"),

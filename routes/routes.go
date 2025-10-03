@@ -9,13 +9,13 @@ import (
 func SetupRoutes(store *db.MongoCollections) *http.ServeMux {
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/", healthCheck)
+	mux.HandleFunc("GET /", healthCheck)
 
 	// Auth
-	mux.HandleFunc("/api/auth/request-otp", handlers.RequestOtp(store.UserCol, store.OtpCol))
-	mux.HandleFunc("/api/auth/verify-otp", handlers.VerifyOtp(store.UserCol, store.OtpCol))
-	mux.HandleFunc("/api/auth/refresh-token", handlers.RefreshToken(store.UserCol))
-	mux.HandleFunc("/api/auth/logout", handlers.Logout())
+	mux.HandleFunc("POST /api/auth/request-otp", handlers.RequestOtp(store.UserCol, store.OtpCol))
+	mux.HandleFunc("POST /api/auth/verify-otp", handlers.VerifyOtp(store.UserCol, store.OtpCol))
+	mux.HandleFunc("POST /api/auth/refresh-token", handlers.RefreshToken(store.UserCol))
+	mux.HandleFunc("POST /api/auth/logout", handlers.Logout())
 
 	// // Task CRUD (protected)
 	// mux.Handle("GET /api/tasks", handlers.AuthMiddleware(http.HandlerFunc(handlers.GetTasks())))
