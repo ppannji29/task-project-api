@@ -11,7 +11,7 @@ func SetupRoutes(store *db.MongoCollections) *http.ServeMux {
 	// api check health
 	mux.HandleFunc("/", healthCheck)
 	// create dummy user for testing
-	mux.HandleFunc("/api/user/mydummy/create", handlers.CreateMyUserDummyTesting(store.UserCol, store.ProfileCol))
+	mux.HandleFunc("POST /api/user/mydummy/create", handlers.CreateMyUserDummyTesting(store.UserCol, store.ProfileCol))
 	// Auth
 	mux.HandleFunc("POST /api/auth/request-otp", handlers.RequestOtp(store.UserCol, store.OtpCol))
 	mux.HandleFunc("POST /api/auth/verify-otp", handlers.VerifyOtp(store.UserCol, store.OtpCol))
