@@ -15,6 +15,7 @@ type MongoCollections struct {
 	UserCol    *mongo.Collection
 	OtpCol     *mongo.Collection
 	ProfileCol *mongo.Collection
+	TaskCol    *mongo.Collection
 }
 
 func InitMongo() (*MongoCollections, error) {
@@ -37,16 +38,28 @@ func InitMongo() (*MongoCollections, error) {
 	if err := client.Ping(ctx, nil); err != nil {
 		return nil, err
 	}
-	log.Println("✅ Connected to MongoDB")
+	log.Println("✅ OK Connected to MongoDB")
 
 	db := client.Database(dbName)
 
 	log.Println(db.Name())
 
-	return &MongoCollections{
+	collections := &MongoCollections{
 		Client:     client,
 		UserCol:    db.Collection("User"),
 		OtpCol:     db.Collection("Otp"),
 		ProfileCol: db.Collection("Profile"),
-	}, nil
+		TaskCol:    db.Collection("Task"),
+	}
+
+	EnsureTaskIndexes(collections.TaskCol)
+	return collections, nil
+
+	// return &MongoCollections{
+	// 	Client:     client,
+	// 	UserCol:    db.Collection("User"),
+	// 	OtpCol:     db.Collection("Otp"),
+	// 	ProfileCol: db.Collection("Profile"),
+	// 	TaskCol:    db.Collection("Task"),
+	// }, nil
 }
