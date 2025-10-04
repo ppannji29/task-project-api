@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"log"
 	"math/rand"
 	"net/smtp"
 	"os"
@@ -53,8 +54,12 @@ func SendEmail(to, subject, body string) error {
 	auth := smtp.PlainAuth("", username, password, "smtp-relay.brevo.com")
 
 	// Kirim email
+	log.Printf("📧 Sending email to %s via %s:%s", to, smtpHost, smtpPort)
+	log.Printf("📧 Using username: %s", username)
+
 	err := smtp.SendMail(smtpHost+":"+smtpPort, auth, from, []string{to}, message)
 	if err != nil {
+		log.Printf("❌ Email send failed: %v", err)
 		return fmt.Errorf("failed to send email: %w", err)
 	}
 

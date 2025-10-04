@@ -12,3 +12,4 @@
 /server
 *.exe
 *.out
+main.go

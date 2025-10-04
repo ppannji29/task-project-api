@@ -17,6 +17,10 @@ import (
 func main() {
 	log.Println("Go Running...")
 
+	// err := godotenv.Load(".env.local") //-- try in local
+	// if err != nil {
+	// 	log.Println("Warning: .env not found, using system env")
+	// }
 	// Load port from environment
 	port := os.Getenv("APP_PORT")
 	if port == "" {
