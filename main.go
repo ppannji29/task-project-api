@@ -76,6 +76,7 @@ func main() {
 	log.Println("Server exited gracefully")
 }
 
+// local setup
 // package main
 
 // import (
