@@ -31,13 +31,16 @@ func SetupRouter(store *db.MongoCollections) http.Handler {
 	r.Delete("/api/auth/logout", handlers.Logout())
 
 	// Tasks (protected)
-	// r.Group(func(r chi.Router) {
-	//     r.Use(handlers.AuthMiddleware)
-	//     r.Get("/api/tasks", handlers.GetTasks())
-	//     r.Post("/api/tasks", handlers.CreateTask())
-	//     r.Put("/api/tasks/{id}", handlers.UpdateTask())
-	//     r.Delete("/api/tasks/{id}", handlers.DeleteTask())
-	// })
+	r.Group(func(r chi.Router) {
+		r.Use(handlers.AuthMiddleware())
+		r.Get("/api/user/me", handlers.GetCurrentUser(store.UserCol))
+
+		// Task CRUD (nanti lo bisa tambahin di sini)
+		// r.Get("/api/tasks", handlers.GetTasks(store.TaskCol))
+		// r.Post("/api/tasks", handlers.CreateTask(store.TaskCol))
+		// r.Put("/api/tasks/{id}", handlers.UpdateTask(store.TaskCol))
+		// r.Delete("/api/tasks/{id}", handlers.DeleteTask(store.TaskCol))
+	})
 
 	return r
 }

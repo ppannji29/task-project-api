@@ -2,6 +2,7 @@
 package handlers
 
 import (
+	"context"
 	"encoding/json"
 	"log"
 	"net/http"
@@ -9,6 +10,8 @@ import (
 
 	"task-project/models"
 
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -44,5 +47,42 @@ func CreateMyUserDummyTesting(userCol *mongo.Collection, profileCol *mongo.Colle
 		log.Println("✅ User created:", user.Email)
 		w.WriteHeader(http.StatusCreated)
 		w.Write([]byte("User created successfully"))
+	}
+}
+
+func GetCurrentUser(userCol *mongo.Collection) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// Ambil user ID dari header (AuthMiddleware lo udah set ini)
+		userID := r.Header.Get("X-User-ID")
+		if userID == "" {
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+
+		// Convert ke ObjectID
+		objID, err := primitive.ObjectIDFromHex(userID)
+		if err != nil {
+			http.Error(w, "Invalid user ID", http.StatusBadRequest)
+			return
+		}
+
+		// Query user dari Mongo
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		var user models.User
+		err = userCol.FindOne(ctx, bson.M{"_id": objID}).Decode(&user)
+		if err != nil {
+			http.Error(w, "User not found", http.StatusNotFound)
+			return
+		}
+
+		// Return JSON response
+		w.Header().Set("Content-Type", "application/json")
+		json.NewEncoder(w).Encode(map[string]interface{}{
+			"success": true,
+			"message": "Profile retrieved successfully",
+			"data":    user,
+		})
 	}
 }

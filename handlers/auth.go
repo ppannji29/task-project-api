@@ -224,6 +224,32 @@ func Logout() http.HandlerFunc {
 	}
 }
 
+// func AuthMiddleware() func(http.Handler) http.Handler {
+// 	return func(next http.Handler) http.Handler {
+// 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+// 			cookie, err := r.Cookie("access_token")
+// 			if err != nil {
+// 				http.Error(w, "Access token not found", http.StatusUnauthorized)
+// 				return
+// 			}
+
+// 			claims := &Claims{}
+// 			token, err := jwt.ParseWithClaims(cookie.Value, claims, func(token *jwt.Token) (interface{}, error) {
+// 				return jwtKey, nil
+// 			})
+// 			if err != nil || !token.Valid || claims.Type != "access" {
+// 				http.Error(w, "Invalid access token", http.StatusUnauthorized)
+// 				return
+// 			}
+
+// 			r.Header.Set("X-User-ID", claims.UserID)
+// 			r.Header.Set("X-User-Email", claims.Email)
+
+// 			next.ServeHTTP(w, r)
+// 		})
+// 	}
+// }
+
 func AuthMiddleware() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -239,6 +265,11 @@ func AuthMiddleware() func(http.Handler) http.Handler {
 			})
 			if err != nil || !token.Valid || claims.Type != "access" {
 				http.Error(w, "Invalid access token", http.StatusUnauthorized)
+				return
+			}
+
+			if _, err := primitive.ObjectIDFromHex(claims.UserID); err != nil {
+				http.Error(w, "Invalid user ID format", http.StatusUnauthorized)
 				return
 			}
 
