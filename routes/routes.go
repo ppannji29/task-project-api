@@ -28,7 +28,7 @@ func SetupRouter(store *db.MongoCollections) http.Handler {
 	r.Post("/api/auth/request-otp", handlers.RequestOtp(store.UserCol, store.OtpCol))
 	r.Post("/api/auth/verify-otp", handlers.VerifyOtp(store.UserCol, store.OtpCol))
 	r.Post("/api/auth/refresh-token", handlers.RefreshToken(store.UserCol))
-	r.Post("/api/auth/logout", handlers.Logout())
+	r.Delete("/api/auth/logout", handlers.Logout())
 
 	// Tasks (protected)
 	// r.Group(func(r chi.Router) {

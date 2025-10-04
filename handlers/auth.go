@@ -13,6 +13,7 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/google/uuid"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -36,8 +37,9 @@ type VerifyOtpRequest struct {
 }
 
 type UserAuth struct {
-	Email string `json:"email"`
-	Name  string `json:"name"`
+	UserID string `json:"user_id,omitempty"`
+	Email  string `json:"email"`
+	Name   string `json:"name"`
 }
 
 type TokenResponse struct {
@@ -118,7 +120,7 @@ func VerifyOtp(userCol *mongo.Collection, otpCol *mongo.Collection) http.Handler
 		json.NewEncoder(w).Encode(TokenResponse{
 			Message:  "Login successful",
 			Token:    accessToken,
-			UserAuth: UserAuth{Email: user.Email, Name: user.Name},
+			UserAuth: UserAuth{UserID: user.UserID, Email: user.Email, Name: user.Name},
 		})
 	}
 }
@@ -140,9 +142,15 @@ func RefreshToken(userCol *mongo.Collection) http.HandlerFunc {
 			return
 		}
 
+		objID, err := primitive.ObjectIDFromHex(claims.UserID)
+		if err != nil {
+			http.Error(w, "Invalid user ID", http.StatusUnauthorized)
+			return
+		}
+
 		ctx := context.Background()
 		var user models.User
-		err = userCol.FindOne(ctx, bson.M{"_id": claims.UserID}).Decode(&user)
+		err = userCol.FindOne(ctx, bson.M{"_id": objID}).Decode(&user)
 		if err != nil {
 			http.Error(w, "User not found", http.StatusUnauthorized)
 			return
@@ -156,14 +164,55 @@ func RefreshToken(userCol *mongo.Collection) http.HandlerFunc {
 
 		setTokenCookie(w, "access_token", newAccessToken, 5*time.Minute)
 
-		w.WriteHeader(http.StatusOK)
 		json.NewEncoder(w).Encode(TokenResponse{
 			Message:  "Token refreshed successfully",
 			Token:    newAccessToken,
-			UserAuth: UserAuth{Email: user.Email, Name: user.Name},
+			UserAuth: UserAuth{UserID: user.UserID, Email: user.Email, Name: user.Name},
 		})
 	}
 }
+
+// func RefreshToken(userCol *mongo.Collection) http.HandlerFunc {
+// 	return func(w http.ResponseWriter, r *http.Request) {
+// 		cookie, err := r.Cookie("refresh_token")
+// 		if err != nil {
+// 			http.Error(w, "Refresh token not found", http.StatusUnauthorized)
+// 			return
+// 		}
+
+// 		claims := &Claims{}
+// 		token, err := jwt.ParseWithClaims(cookie.Value, claims, func(token *jwt.Token) (interface{}, error) {
+// 			return jwtKey, nil
+// 		})
+// 		if err != nil || !token.Valid || claims.Type != "refresh" {
+// 			http.Error(w, "Invalid refresh token", http.StatusUnauthorized)
+// 			return
+// 		}
+
+// 		ctx := context.Background()
+// 		var user models.User
+// 		err = userCol.FindOne(ctx, bson.M{"_id": claims.UserID}).Decode(&user)
+// 		if err != nil {
+// 			http.Error(w, "User not found", http.StatusUnauthorized)
+// 			return
+// 		}
+
+// 		newAccessToken, err := generateToken(user.UserID, user.Email, "access", 5*time.Minute)
+// 		if err != nil {
+// 			http.Error(w, "Failed to generate new access token", http.StatusInternalServerError)
+// 			return
+// 		}
+
+// 		setTokenCookie(w, "access_token", newAccessToken, 5*time.Minute)
+
+// 		w.WriteHeader(http.StatusOK)
+// 		json.NewEncoder(w).Encode(TokenResponse{
+// 			Message:  "Token refreshed successfully",
+// 			Token:    newAccessToken,
+// 			UserAuth: UserAuth{UserID: user.UserID, Email: user.Email, Name: user.Name},
+// 		})
+// 	}
+// }
 
 func Logout() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
