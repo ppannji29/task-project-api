@@ -38,15 +38,23 @@ func SendEmail(to, subject, body string) error {
 		},
 		"subject": subject,
 		"htmlContent": fmt.Sprintf(`
-            <html>
-                <body style="font-family: Arial, sans-serif;">
-                    <h1 style="color: #4CAF50;">✅ Brevo API Works!</h1>
-                    <p>Your OTP code is:</p>
-                    <h2 style="color: #4CAF50;">%s</h2>
-                    <p>This code is valid for 2 minutes.</p>
-                </body>
-            </html>
-        `, body),
+			<html>
+				<body style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
+					<p>Hello,</p>
+					<p>We received a request to log in using a One-Time Password (OTP).</p>
+
+					<div style="padding: 20px; margin: 20px 0; background-color: #f4f4f4; border-left: 5px solid #4CAF50;">
+						<p style="margin: 0; font-size: 16px;">🔐 <strong>Your OTP Code:</strong></p>
+						<p style="margin: 5px 0; font-size: 28px; font-weight: bold; color: #4CAF50;">%s</p>
+					</div>
+
+					<p>This code is valid for <strong>2 minutes</strong>. Please use it immediately to complete your login.</p>
+					<p><strong>Do not share this code</strong> with anyone. If you did not request this code, you can safely ignore this email.</p>
+
+					<p>Best regards,<br><strong>Admin Team</strong></p>
+				</body>
+			</html>
+		`, body),
 	}
 	brevoApiSendEmail := os.Getenv("BREVO_API_SEND_EMAIL")
 	resp, err := client.R().
