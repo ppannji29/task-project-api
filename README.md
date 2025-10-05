@@ -53,6 +53,21 @@ DELETE /api/task/{id} – Delete task
 
 All /api/task/* endpoints are secured token via middleware
 
+## 📊 MongoDB Index Strategy
+
+To ensure optimal query performance, indexes are automatically created through the `EnsureTaskIndexes()` function.
+
+### 🧩 Index Overview
+
+| **Field**         | **Purpose**                         |
+|--------------------|-------------------------------------|
+| `user_id`          | Filter tasks per user               |
+| `status`           | Filter and sort by status           |
+| `priority`         | Filter and sort by priority         |
+| `due_date`         | Sort by deadline                    |
+| `created_at`       | Sort by newest tasks                |
+| `user_id + status` | Compound index for common queries   |
+
 🧪 Tech Stack
 
 Language: Go (Golang)
@@ -64,3 +79,4 @@ Deployment: Railway
 🌐 Live Deployment
 
 🔗 APP: https://task-project-fe-production.up.railway.app
+
