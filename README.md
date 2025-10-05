@@ -22,6 +22,7 @@ curl --location 'https://task-project-api-production.up.railway.app/api/user/myd
     "gender": "male"
   }
 }'
+```
 
 🔐 Mock Authentication
 Simulated OTP-based login flow with token handling.
