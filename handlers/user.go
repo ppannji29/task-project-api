@@ -19,9 +19,23 @@ func CreateMyUserDummyTesting(userCol *mongo.Collection, profileCol *mongo.Colle
 	return func(w http.ResponseWriter, r *http.Request) {
 		var user models.User
 
-		// Decode JSON dari Postman
 		if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
 			http.Error(w, "Invalid request payload", http.StatusBadRequest)
+			return
+		}
+
+		if user.Email == "" {
+			http.Error(w, "Email is required", http.StatusBadRequest)
+			return
+		}
+
+		count, err := userCol.CountDocuments(r.Context(), bson.M{"email": user.Email})
+		if err != nil {
+			http.Error(w, "Failed to check email", http.StatusInternalServerError)
+			return
+		}
+		if count > 0 {
+			http.Error(w, "Your account is already registered", http.StatusConflict)
 			return
 		}
 
@@ -37,7 +51,7 @@ func CreateMyUserDummyTesting(userCol *mongo.Collection, profileCol *mongo.Colle
 		}
 
 		// Insert user
-		_, err := userCol.InsertOne(r.Context(), user)
+		_, err = userCol.InsertOne(r.Context(), user)
 		if err != nil {
 			log.Println("❌ Failed to insert user:", err)
 			http.Error(w, "Failed to create user", http.StatusInternalServerError)
