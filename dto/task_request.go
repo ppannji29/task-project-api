@@ -9,3 +9,11 @@ type CreateTaskRequest struct {
 	Priority    string    `json:"priority"`
 	DueDate     time.Time `json:"due_date"`
 }
+
+type UpdateTaskRequest struct {
+	Title       *string    `json:"title,omitempty"`
+	Description *string    `json:"description,omitempty"`
+	Status      *string    `json:"status,omitempty"`
+	Priority    *string    `json:"priority,omitempty"`
+	DueDate     *time.Time `json:"due_date,omitempty"`
+}

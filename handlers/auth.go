@@ -172,48 +172,6 @@ func RefreshToken(userCol *mongo.Collection) http.HandlerFunc {
 	}
 }
 
-// func RefreshToken(userCol *mongo.Collection) http.HandlerFunc {
-// 	return func(w http.ResponseWriter, r *http.Request) {
-// 		cookie, err := r.Cookie("refresh_token")
-// 		if err != nil {
-// 			http.Error(w, "Refresh token not found", http.StatusUnauthorized)
-// 			return
-// 		}
-
-// 		claims := &Claims{}
-// 		token, err := jwt.ParseWithClaims(cookie.Value, claims, func(token *jwt.Token) (interface{}, error) {
-// 			return jwtKey, nil
-// 		})
-// 		if err != nil || !token.Valid || claims.Type != "refresh" {
-// 			http.Error(w, "Invalid refresh token", http.StatusUnauthorized)
-// 			return
-// 		}
-
-// 		ctx := context.Background()
-// 		var user models.User
-// 		err = userCol.FindOne(ctx, bson.M{"_id": claims.UserID}).Decode(&user)
-// 		if err != nil {
-// 			http.Error(w, "User not found", http.StatusUnauthorized)
-// 			return
-// 		}
-
-// 		newAccessToken, err := generateToken(user.UserID, user.Email, "access", 5*time.Minute)
-// 		if err != nil {
-// 			http.Error(w, "Failed to generate new access token", http.StatusInternalServerError)
-// 			return
-// 		}
-
-// 		setTokenCookie(w, "access_token", newAccessToken, 1*time.Hour)
-
-// 		w.WriteHeader(http.StatusOK)
-// 		json.NewEncoder(w).Encode(TokenResponse{
-// 			Message:  "Token refreshed successfully",
-// 			Token:    newAccessToken,
-// 			UserAuth: UserAuth{UserID: user.UserID, Email: user.Email, Name: user.Name},
-// 		})
-// 	}
-// }
-
 func Logout() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		clearTokenCookie(w, "access_token")
@@ -223,32 +181,6 @@ func Logout() http.HandlerFunc {
 		json.NewEncoder(w).Encode(TokenResponse{Message: "Logout successful"})
 	}
 }
-
-// func AuthMiddleware() func(http.Handler) http.Handler {
-// 	return func(next http.Handler) http.Handler {
-// 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-// 			cookie, err := r.Cookie("access_token")
-// 			if err != nil {
-// 				http.Error(w, "Access token not found", http.StatusUnauthorized)
-// 				return
-// 			}
-
-// 			claims := &Claims{}
-// 			token, err := jwt.ParseWithClaims(cookie.Value, claims, func(token *jwt.Token) (interface{}, error) {
-// 				return jwtKey, nil
-// 			})
-// 			if err != nil || !token.Valid || claims.Type != "access" {
-// 				http.Error(w, "Invalid access token", http.StatusUnauthorized)
-// 				return
-// 			}
-
-// 			r.Header.Set("X-User-ID", claims.UserID)
-// 			r.Header.Set("X-User-Email", claims.Email)
-
-// 			next.ServeHTTP(w, r)
-// 		})
-// 	}
-// }
 
 func AuthMiddleware() func(http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {

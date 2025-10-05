@@ -7,10 +7,13 @@ import (
 )
 
 type StatusChange struct {
-	From      string             `bson:"from" json:"from"`
-	To        string             `bson:"to" json:"to"`
-	ChangedAt time.Time          `bson:"changed_at" json:"changed_at"`
-	ChangedBy primitive.ObjectID `bson:"changed_by" json:"changed_by"`
+	Type           string             `bson:"type" json:"type"`
+	Action         string             `bson:"action" json:"action"`
+	From           string             `bson:"from" json:"from"`
+	To             string             `bson:"to" json:"to"`
+	ChangedAt      time.Time          `bson:"changed_at" json:"changed_at"`
+	ChangedBy      primitive.ObjectID `bson:"changed_by" json:"changed_by"`
+	ChangedByEmail string             `json:"changed_by_email,omitempty"`
 }
 
 type Task struct {
