@@ -51,7 +51,7 @@ DELETE /api/task/{id} – Delete task
 
 🛡️ Protected Routes
 
-All /api/task/* endpoints are secured via middleware. Token must be present in cookies (access_token, refresh_token, or token) to access them.
+All /api/task/* endpoints are secured token via middleware
 
 🧪 Tech Stack
 
