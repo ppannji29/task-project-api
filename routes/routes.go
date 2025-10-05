@@ -35,46 +35,10 @@ func SetupRouter(store *db.MongoCollections) http.Handler {
 		r.Use(handlers.AuthMiddleware())
 		r.Get("/api/user/me", handlers.GetCurrentUser(store.UserCol))
 
-		// Task CRUD (nanti lo bisa tambahin di sini)
-		// r.Get("/api/tasks", handlers.GetTasks(store.TaskCol))
-		// r.Post("/api/tasks", handlers.CreateTask(store.TaskCol))
-		// r.Put("/api/tasks/{id}", handlers.UpdateTask(store.TaskCol))
-		// r.Delete("/api/tasks/{id}", handlers.DeleteTask(store.TaskCol))
+		r.Get("/api/tasks", handlers.GetAllTasks(store.TaskCol))
+		r.Get("/api/task", handlers.GetTaskByID(store.TaskCol))
+		r.Post("/api/task", handlers.CreateTask(store.TaskCol))
 	})
 
 	return r
 }
-
-// package routes
-
-// import (
-// 	"net/http"
-// 	"task-project/db"
-// 	"task-project/handlers"
-// )
-
-// func SetupRoutes(store *db.MongoCollections) *http.ServeMux {
-// 	mux := http.NewServeMux()
-// 	// api check health
-// 	mux.HandleFunc("/", healthCheck)
-// 	// create dummy user for testing
-// 	mux.HandleFunc("POST /api/user/mydummy/create", handlers.CreateMyUserDummyTesting(store.UserCol, store.ProfileCol))
-// 	// Auth
-// 	mux.HandleFunc("POST /api/auth/request-otp", handlers.RequestOtp(store.UserCol, store.OtpCol))
-// 	mux.HandleFunc("POST /api/auth/verify-otp", handlers.VerifyOtp(store.UserCol, store.OtpCol))
-// 	mux.HandleFunc("POST /api/auth/refresh-token", handlers.RefreshToken(store.UserCol))
-// 	mux.HandleFunc("POST /api/auth/logout", handlers.Logout())
-
-// 	// // Task CRUD (protected)
-// 	// mux.Handle("GET /api/tasks", handlers.AuthMiddleware(http.HandlerFunc(handlers.GetTasks())))
-// 	// mux.Handle("POST /api/tasks", handlers.AuthMiddleware(http.HandlerFunc(handlers.CreateTask())))
-// 	// mux.Handle("PUT /api/tasks/", handlers.AuthMiddleware(http.HandlerFunc(handlers.UpdateTask()))) // use query param or path parsing
-// 	// mux.Handle("DELETE /api/tasks/", handlers.AuthMiddleware(http.HandlerFunc(handlers.DeleteTask())))
-
-// 	return mux
-// }
-
-// func healthCheck(w http.ResponseWriter, r *http.Request) {
-// 	w.WriteHeader(http.StatusOK)
-// 	w.Write([]byte("Test mock API is running!"))
-// }
