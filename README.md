@@ -1,14 +1,17 @@
-🚀 Features Implemented
+## 🚀 Features Implemented
 
-User Dummy Creation
+### 👤 User Dummy Creation
 
-POST /api/user/mydummy/create – Create dummy user for testing (no UI)
+Create a dummy user for testing purposes (no frontend UI available).
 
+**Endpoint:** `POST /api/user/mydummy/create`
+
+```bash
 curl --location 'https://task-project-api-production.up.railway.app/api/user/mydummy/create' \
 --header 'Content-Type: application/json' \
 --data-raw '{
   "name": "Panji Pp",
-  "email": "testingdev29@gmail.com", // -> change to your email to get request otp from email
+  "email": "testingdev29@gmail.com", // ← change to your email to receive OTP
   "phone": "08123456789",
   "profile": {
     "address": "Jl. Dummy Raya No. 123",
@@ -18,8 +21,7 @@ curl --location 'https://task-project-api-production.up.railway.app/api/user/myd
     "age": 30,
     "gender": "male"
   }
-}
-'
+}'
 
 🔐 Mock Authentication
 Simulated OTP-based login flow with token handling.
