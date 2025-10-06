@@ -41,7 +41,7 @@ All task routes are protected and require a valid token.
 
 GET /api/tasks – List tasks (supports filter, sort, pagination)
 
-GET /api/task/{id} – View task detail
+GET /api/task/{id} – View task detail, milestone
 
 POST /api/task – Create new task
 
