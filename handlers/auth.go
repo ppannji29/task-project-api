@@ -108,10 +108,10 @@ func VerifyOtp(userCol *mongo.Collection, otpCol *mongo.Collection) http.Handler
 			return
 		}
 
-		accessToken, _ := generateToken(user.UserID, user.Email, "access", 1*time.Hour)
+		accessToken, _ := generateToken(user.UserID, user.Email, "access", 5*time.Minute)
 		refreshToken, _ := generateToken(user.UserID, user.Email, "refresh", 24*time.Hour)
 
-		setTokenCookie(w, "access_token", accessToken, 1*time.Hour)
+		setTokenCookie(w, "access_token", accessToken, 5*time.Minute)
 		setTokenCookie(w, "refresh_token", refreshToken, 24*time.Hour)
 
 		_, _ = otpCol.UpdateOne(ctx, bson.M{"_id": otp.ID}, bson.M{"$set": bson.M{"is_claimed": true}})
@@ -156,13 +156,13 @@ func RefreshToken(userCol *mongo.Collection) http.HandlerFunc {
 			return
 		}
 
-		newAccessToken, err := generateToken(user.UserID, user.Email, "access", 1*time.Hour)
+		newAccessToken, err := generateToken(user.UserID, user.Email, "access", 5*time.Minute)
 		if err != nil {
 			http.Error(w, "Failed to generate new access token", http.StatusInternalServerError)
 			return
 		}
 
-		setTokenCookie(w, "access_token", newAccessToken, 1*time.Hour)
+		setTokenCookie(w, "access_token", newAccessToken, 5*time.Minute)
 
 		json.NewEncoder(w).Encode(TokenResponse{
 			Message:  "Token refreshed successfully",
